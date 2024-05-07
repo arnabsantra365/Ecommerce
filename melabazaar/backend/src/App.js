@@ -10,7 +10,9 @@ app.use(cors({
 }));
 app.use(cookieparser());
 
-
+import userRouter from "./routes/user.routes.js";
+//localhost:8000/api/v1/users/register(...)
+app.use("/api/v1/users",userRouter) //this gives the controll to the userrRouter function in routes
 
 
 
