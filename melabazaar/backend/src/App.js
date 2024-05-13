@@ -9,7 +9,7 @@ app.use(cors({
     credentials:true,
 }));
 app.use(cookieparser());
-
+app.use(express.json()); // body parser required for getting data
 import userRouter from "./routes/user.routes.js";
 //localhost:8000/api/v1/users/register(...)
 app.use("/api/v1/users",userRouter) //this gives the controll to the userrRouter function in routes

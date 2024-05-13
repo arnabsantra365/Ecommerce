@@ -9,6 +9,12 @@ const userSchema = new mongoose.Schema({
         unique:true,
         lowercase:true
     },
+    fullname:{
+        type:String,
+        required:true,
+        unique:true,
+        lowercase:true
+    },
     email:{
         type:String,
         required:true,
@@ -29,7 +35,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")) return next();//check only when pass is modified else move forward
 
-    this.password=bcrypt.hash(this.password,10); //hash pass
+    this.password=await bcrypt.hash(this.password,10); //hash pass
     next()
 } )
 
@@ -37,5 +43,34 @@ userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password,this.password); //compare the pass and hashed pass and return true or false
 }
 //access and refresh token
+userSchema.methods.generateAccessToken= function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullname: this.fullname
+        },
+        process.env.ACCESS_TOKEN,
+        {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        }
+    )
+}
+userSchema.methods.generateRefreshToken= function () {
+    return jwt.sign(
+        {
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullname: this.fullname
+        },
+        process.env.REFRESH_TOKEN,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+}
+
 
 export const user = mongoose.model("user",userSchema);
