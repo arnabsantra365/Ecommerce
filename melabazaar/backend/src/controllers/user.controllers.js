@@ -3,9 +3,9 @@ import { ApiError } from "../utils/ApiError.js";
 import {ApiResponse} from "../utils/ApiResponse.js";
 import { user } from "../models/users.models.js";
 const regUser = asynchandler(async (req,res)=>{
-    res.status(200).json({ //to register the user
-        message:"ok",
-    })
+    // res.status(200).json({ //to register the user
+    //     message:"ok",
+    // })
 
 
 const {fullname,email,username,password} =req.body
@@ -16,7 +16,7 @@ if(fullname==="" || email==="" || username==="" || password===""){ //validation
     throw new ApiError(400,"field required")
 }
 
-const existedUser=user.findOne({
+const existedUser=await user.findOne({
     $or:[{username},{email}]
 })
 
@@ -31,7 +31,7 @@ const User= await user.create({ //creating a new user in database
     username: username.toLowerCase(),
 })
 
-const createdUser = await User.findById(user._id).select( 
+const createdUser = await user.findById(User._id).select( 
     // used to not send the password and refreshtoken as response
     "-password -refreshToken" 
 )
